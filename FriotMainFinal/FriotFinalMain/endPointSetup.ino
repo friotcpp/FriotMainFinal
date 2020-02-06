@@ -46,6 +46,7 @@ void endpointSetup(){//endpoint setup function
 //===================================
 
 void loadWifiInfo() {//creates a json package
+
   Serial.println("Creating JSON payload with wifi info");
   // Allocate JsonBuffer
   // Use arduinojson.org/assistant to compute the capacity.
@@ -53,10 +54,14 @@ void loadWifiInfo() {//creates a json package
  
   // Create the root object
   DynamicJsonDocument root(1024);
- 
+ String mainIP = WiFi.localIP().toString();
+   Serial.println("mainIP before remove ="+mainIP);
+      mainIP.remove(0,8);
+         Serial.println("mainIP after remove ="+mainIP);
+         if(mainIP=="t)"){mainIP ="unset";}
   root["SSID"] = ssid; //ssid wifi info
   root["PASS"] = password; //password wifi info
-  root["MIP"] =   WiFi.localIP().toString();
+  root["MIP"] =   mainIP;
   root["KEY"] = inWifiKey; //if connected to wifi, flag
   serializeJson(root,wifiINFO);  //Store JSON in String variable
   }

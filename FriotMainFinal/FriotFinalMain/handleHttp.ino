@@ -113,3 +113,8 @@ void handleGetIP() {
   else
     server.send(200, "text/plain", "Server is not connected to a WiFi! IP: " + WiFi.localIP().toString());
 }
+void handlerecieveIP(){
+ EPIP = server.arg("epIP");
+  Serial.println("recieving ip address from ep: "+EPIP);
+      server.send(200, "text/plain", "ap recieved ip from ep");
+  }

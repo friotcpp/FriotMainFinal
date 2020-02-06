@@ -2,8 +2,8 @@
 void connectWifi() {
   Serial.println("Connecting as wifi client...");
   WiFi.disconnect();
-  if(password=="")
-   WiFi.begin(ssid);
+//  if(password=="")
+//   WiFi.begin(ssid);
   WiFi.begin(ssid, password);
   int connRes = WiFi.waitForConnectResult();
   Serial.print("connRes: ");
@@ -54,16 +54,16 @@ String checkColor(String device, String command)
 }
 
 //==========color command response
-void handleCommand() {
-  digitalWrite(led, 1);
-  String device = server.arg("OutputDevice");
-  String command = server.arg("Command");
-  String color = checkColor(device,command);
-  server.send(200, "text/plain", "Successfully Received Code: [" + command + "]\nColor: [" + color + "]");
-  Serial.println("Handling Command: {" + command + "} For: {" + device + "}...");
-  Serial.println("The Led is now: " + color + "!");
-  digitalWrite(led, 0);
-}
+//void handleCommand() {
+//  digitalWrite(led, 1);
+//  String device = server.arg("OutputDevice");
+//  String command = server.arg("Command");
+//  String color = checkColor(device,command);
+//  server.send(200, "text/plain", "Successfully Received Code: [" + command + "]\nColor: [" + color + "]");
+//  Serial.println("Handling Command: {" + command + "} For: {" + device + "}...");
+//  Serial.println("The Led is now: " + color + "!");
+//  digitalWrite(led, 0);
+//}
 
 //====Firebase Print debug tool
 void printResult(FirebaseData &data)

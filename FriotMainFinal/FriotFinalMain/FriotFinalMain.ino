@@ -14,7 +14,7 @@ const int interruptPin = 10;//GPIO10, pin labeled 'SD3' ESP8266-12e NodeMCU
 long timeStart; //time stamp for setup time out
 int loopLock = 2;//extra logic to set priority to functiona in main
 int inWifiKey =0;//if main is connected to wifi
-int wifiPort =8080;//set port
+int wifiPort =8080;//set wifi server port (non-http/browser)
 bool setupEndpointGO = false;//setupmode flag
 bool timeOUT =true;//flag for timeout startpoint
 
@@ -26,8 +26,10 @@ bool EPSave = false;//bool to add/update EP device
 const char *epid = "abcde";//current ep/main name array
 int epcodes[5];//array to hold ep name type
 String setNames[5];//changeable name given from phone
-
-//======
+String EPIP="";
+//====== EP relay
+   HTTPClient http;    //Declare object of class HTTPClient
+   //   String device;
 
 //ISR function call declared before setup, prevents compiling issues
 ICACHE_RAM_ATTR void setupISR() {
@@ -92,6 +94,7 @@ FirebaseJson json;
 
 //====setup===//
 void setup() {
+  delay(1500);
   //output setup
   pinMode(led, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
@@ -110,17 +113,23 @@ void setup() {
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-  //ClearCredentials();
+    Serial.println();
+  //ClearCredentials(); ////for debugging
+    pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), setupISR, FALLING);
   Serial.println("Configuring access point...");
   /* You can remove the password parameter if you want the AP to be open. */
   //WiFi.softAPConfig(apIP, apIP, netMsk);
   WiFi.softAP(softAP_ssid, softAP_password,false);
- 
+   loadCredentials();
   // WiFi.softAP(softAP_ssid,softAP_password);
   delay(500); // Without delay I've seen the IP address blank
   Serial.print("Main AP IP address: ");
   Serial.println(WiFi.softAPIP());
-
+  
+ wifiserver.begin();
+   Serial.print("Started wifiserver on port: ");
+   Serial.println(wifiPort);
   /* Setup the DNS server redirecting all the domains to the apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   // if DNSServer is started with "*" for domain name, it will reply with
@@ -136,6 +145,7 @@ void setup() {
 //new
   server.on("/getip", HTTP_GET, handleGetIP);
   server.on("/receive", HTTP_POST, handleCommand);
+  server.on("/epip", HTTP_POST, handlerecieveIP);
 //
   server.onNotFound(handleNotFound);
   
@@ -222,6 +232,11 @@ void loop() {
       MDNS.update();
     }
   }
+    if (setupEndpointGO&loopLock<3){//if in settining up mode, may modify to a while loop
+      if(wifiINFO=="")//fills out wifi json info only once
+      loadWifiInfo();//goes to json void for wifi info
+      setupMode();
+    }//end setup mode if statement
   // Do work:
   //DNS
   dnsServer.processNextRequest();
