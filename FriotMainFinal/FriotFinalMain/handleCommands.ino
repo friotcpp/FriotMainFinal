@@ -3,8 +3,9 @@ void handleCommand() {
   String command = server.arg("Command");
 // String  device = findDeviceName(server.arg("OutputDevice"));//used to find individual ep names
 String device = server.arg("OutputDevice");
-  //String color = checkColor(device,command);
-  server.send(200, "text/plain", "Successfully Received Code:");// [" + command + "]\nColor: [" + color + "]");
+  String color = checkColor(device,command);
+  server.send(200, "text/plain", "Successfully Received Code: [" + command + "]\nColor: [" + color + "]");
+  if(device!="led1")
    toEP(device,command);
   Serial.println("Handling Command: {" + command + "} For: {" + device + "}...");
   //Serial.println("The Led is now: " + color + "!");
