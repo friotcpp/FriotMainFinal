@@ -113,8 +113,29 @@ void handleGetIP() {
   else
     server.send(200, "text/plain", "Server is not connected to a WiFi! IP: " + WiFi.localIP().toString());
 }
+
+
 void handlerecieveIP(){
- EPIP = server.arg("epIP");
-  Serial.println("recieving ip address from ep: "+EPIP);
-      server.send(200, "text/plain", "ap recieved ip from ep");
+     EPIP= server.arg("epIP");
+     EPIP.toCharArray(tempEPIP,8);
+     tempEPPlace = server.arg("fp").toInt();
+     server.send(200, "text/plain", "ap and place recieved ip from ep");
+        EPFPUP =true;
+              
+  }
+
+
+
+  
+  void handleSetupRequest(){
+            Serial.println("set req");
+    if( server.arg("auth")=="42")
+   {   server.send(200, "text/plain", "ok");
+      setupEndpointGO=true;
+      Serial.println("set req true");
+      return;
+      }
+     else       {server.send(200, "text/plain", "not authenticated");
+     Serial.println("set req false");}
+  
   }

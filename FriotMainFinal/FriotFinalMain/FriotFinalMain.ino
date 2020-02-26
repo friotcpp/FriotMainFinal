@@ -23,10 +23,14 @@ String wifiINFO; //string for JSON information of WIFI network
 //=======EP CLASS
 // ep be numbered as they get paired, number determined name from array and ep codes
 bool EPSave = false;//bool to add/update EP device
-const char *epid = "abcde";//current ep/main name array
-int epcodes[5];//array to hold ep name type
-String setNames[5];//changeable name given from phone
-String EPIP="";
+bool EPFPUP = false;
+String  EPIP="";
+char tempName[8];
+char tempEPIP[8];
+String LIP[6]="";
+int tempEPPlace=0;
+char sendFP='0';
+char *eek = "fp=0";
 //====== EP relay
    HTTPClient http;    //Declare object of class HTTPClient
    //   String device;
@@ -41,9 +45,10 @@ ICACHE_RAM_ATTR void setupISR() {
 
 
 //===Firebase===//
-#define FIREBASE_HOST "use different host"
-#define FIREBASE_AUTH "secret key"
-
+//#define FIREBASE_HOST "use different host"
+//#define FIREBASE_AUTH "secret key"
+#define FIREBASE_HOST "piechart-9229a.firebaseio.com"
+#define FIREBASE_AUTH "EJeC73NDL7TeVwIuGWjLTjrPtFReVwzSIcMZYWjb"
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #define APSSID "ESP_main"
 #define APPSK  "12345678"
@@ -62,7 +67,7 @@ const char *softAP_ssid = APSSID;
 const char *softAP_password = APPSK;
 
 /* hostname for mDNS. Should work at least on windows. Try http://esp8266.local */
-const char *myHostname = "esp8266";
+const char *myHostname = "espmain";
 
 /* Don't set this wifi credentials. They are configurated at runtime and stored on EEPROM */
 char ssid[32] = "";
@@ -146,6 +151,7 @@ void setup() {
   server.on("/getip", HTTP_GET, handleGetIP);
   server.on("/receive", HTTP_POST, handleCommand);
   server.on("/epip", HTTP_POST, handlerecieveIP);
+    server.on("/setupgo", HTTP_POST, handleSetupRequest);
 //
   server.onNotFound(handleNotFound);
   
@@ -237,6 +243,7 @@ void loop() {
       loadWifiInfo();//goes to json void for wifi info
       setupMode();
     }//end setup mode if statement
+    if(EPFPUP) updateAIP();
   // Do work:
   //DNS
   dnsServer.processNextRequest();

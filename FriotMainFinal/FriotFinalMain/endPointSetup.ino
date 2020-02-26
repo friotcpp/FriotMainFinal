@@ -1,3 +1,28 @@
+void setupMode(){
+
+      
+    if(timeOUT==true){//if timeout bool true
+      timeOUT=false;//boolean so time is not set again
+      timeStart=millis();//timestamp
+      Serial.println("Time out timer begins");
+    }
+    
+    if((timeStart+90000<millis()) ){//times out after 90sec
+      setupEndpointGO = false;//comes out of setup 'if' in main loop
+      timeOUT=true;//reset new timer  
+      Serial.println("Setup time out");
+      return; //comes out if endpoint setup loop    
+    }
+      endpointSetup();//checks for client in a void, if no timeout
+
+      
+//     if(!setupEndpointGO){ //this is just a loop simulating an ISR
+// Serial.println("Restarting setup mode");
+// delay(2500);
+// setupEndpointGO=true;  }
+}
+
+
 void endpointSetup(){//endpoint setup function
  WiFiClient client = wifiserver.available();//checks for client
  if (!client) {return;}//doesnot continue till client, exits endpointSetup()
@@ -29,15 +54,15 @@ void endpointSetup(){//endpoint setup function
       EPSave = true;     
      }
      if (EPSave = true) {
-      int epcode = jsonBuffer["type"].as<int>();
-      char NfromEP = jsonBuffer["Name"].as<char>();
-      SaveDevice(epcode, NfromEP);
+
+  //    SaveDevice(jsonBuffer["type"].as<byte>(), strncpy(tempName, jsonBuffer["Name"].as<char*>(), sizeof(tempName)),jsonBuffer["fp"].as<byte>());
       }
 
     Serial.println(F("Info Payload:"));
     Serial.println(jsonBuffer["type"].as<char*>());
     Serial.println(jsonBuffer["Name"].as<char*>());
     Serial.println(jsonBuffer["ESPAUTH"].as<int>());
+        Serial.println(jsonBuffer["fp"].as<byte>());
     digitalWrite(LED_BUILTIN, HIGH);
     
 // if (jsonBuffer["name"].as<int>()==42)//future login/identifying save
@@ -66,27 +91,3 @@ void loadWifiInfo() {//creates a json package
   serializeJson(root,wifiINFO);  //Store JSON in String variable
   }
 //===================================================================//
-
-void setupMode(){
-
-      
-    if(timeOUT==true){//if timeout bool true
-      timeOUT=false;//boolean so time is not set again
-      timeStart=millis();//timestamp
-      Serial.println("Time out timer begins");
-    }
-    
-    if((timeStart+90000<millis()) ){//times out after 90sec
-      setupEndpointGO = false;//comes out of setup 'if' in main loop
-      timeOUT=true;//reset new timer  
-      Serial.println("Setup time out");
-      return; //comes out if endpoint setup loop    
-    }
-      endpointSetup();//checks for client in a void, if no timeout
-
-      
-//     if(!setupEndpointGO){ //this is just a loop simulating an ISR
-// Serial.println("Restarting setup mode");
-// delay(2500);
-// setupEndpointGO=true;  }
-}
