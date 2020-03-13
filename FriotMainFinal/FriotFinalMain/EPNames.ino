@@ -19,18 +19,26 @@ void SaveDevice(byte EPcode, char EPName[8], byte EPFP) {
 
 byte saveDeviceIP(char EPIP[8], byte EPFP) {//handlehttprecicveediop
     EPSave = false;
-     Serial.print("fpip:");
+     Serial.print("fpip: ");
      Serial.println(EPFP);
- if(EPFP>0&EPFP<7) 
+     Serial.print("LED?: ");
+     Serial.println(EPFP);
+     if(ledFlag == true)
+     {
+     epGroup[EPFP-1]= 2;
+     Serial.println(epGroup[EPFP-1]);
+     }
+     ledFlag=false;
+ if(EPFP>0&EPFP<maxfp) 
   {   //if EPFP = 0
     LIP[EPFP-1]=EPIP;
 
     return 0;
   }
- if(EPFP<1||EPFP>6)
+ if(EPFP<1||EPFP>maxfp-1)
    EPFP = 1;
   
-  while(EPFP<7)
+  while(EPFP<maxfp)
   { 
     if(LIP[EPFP-1]=="")
     {
@@ -45,6 +53,7 @@ byte saveDeviceIP(char EPIP[8], byte EPFP) {//handlehttprecicveediop
 }
 
 void updateAIP(){
+  loopLock--;
  Serial.println("IP update");
                   sendFP =48+saveDeviceIP(tempEPIP,tempEPPlace);
                   Serial.println(sendFP);
@@ -54,15 +63,15 @@ void updateAIP(){
                  EPFPUP =false;
                   return;
                 }
-eek[3]=sendFP;
-Serial.println(eek);
+  eek[3]=sendFP;
+  Serial.println(eek);
   HTTPClient upID;  //Declare an object of class HTTPClient
   upID.begin("http://192.168."+ EPIP +"/place");  //Specify request destination
-   upID.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
+  upID.addHeader("Content-Type", "application/x-www-form-urlencoded");    //Specify content-type header
  
- int httpCode =  upID.POST(eek);   //Send the request
+  int httpCode =  upID.POST(eek);   //Send the request
   Serial.print("code:");
-   Serial.println(httpCode);
+  Serial.println(httpCode);
 
  
   if (httpCode > 0) 
@@ -86,12 +95,21 @@ void decypherType(int tc){
   }
 }
 
-void handleDeviceName (char EPID, String NfromPhone){
-  //epid to int
-  int spaceName= 0;
-//  setNames[spaceName]= NfromPhone;
-}
-String findDeviceName(String fromPhone){
-  //if fromPhone = setNames[0];
-  //return epid[0];
-}
+void setEPIP(char devp)
+  {
+    Serial.println("devp=");
+    Serial.println(devp);
+  EPIP = LIP[devp-49];
+  Serial.println("EPIP var is now:" + EPIP);
+  
+  }
+
+//void handleDeviceName (char EPID, String NfromPhone){
+//  //epid to int
+//  int spaceName= 0;
+////  setNames[spaceName]= NfromPhone;
+//}
+//String findDeviceName(String fromPhone){
+//  //if fromPhone = setNames[0];
+//  //return epid[0];
+//}

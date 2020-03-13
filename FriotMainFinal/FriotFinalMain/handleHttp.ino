@@ -116,9 +116,12 @@ void handleGetIP() {
 
 
 void handlerecieveIP(){
+  loopLock++;
      EPIP= server.arg("epIP");
      EPIP.toCharArray(tempEPIP,8);
      tempEPPlace = server.arg("fp").toInt();
+    if( server.arg("type").toInt()==2)
+     ledFlag = true;
      server.send(200, "text/plain", "ap and place recieved ip from ep");
         EPFPUP =true;
               

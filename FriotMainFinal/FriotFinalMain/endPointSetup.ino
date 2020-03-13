@@ -8,9 +8,8 @@ void setupMode(){
     }
     
     if((timeStart+90000<millis()) ){//times out after 90sec
-      setupEndpointGO = false;//comes out of setup 'if' in main loop
-      timeOUT=true;//reset new timer  
-      Serial.println("Setup time out");
+      endSetup();
+  Serial.println("Setup time out");
       return; //comes out if endpoint setup loop    
     }
       endpointSetup();//checks for client in a void, if no timeout
@@ -54,7 +53,7 @@ void endpointSetup(){//endpoint setup function
       EPSave = true;     
      }
      if (EPSave = true) {
-
+endSetup();
   //    SaveDevice(jsonBuffer["type"].as<byte>(), strncpy(tempName, jsonBuffer["Name"].as<char*>(), sizeof(tempName)),jsonBuffer["fp"].as<byte>());
       }
 
@@ -64,12 +63,19 @@ void endpointSetup(){//endpoint setup function
     Serial.println(jsonBuffer["ESPAUTH"].as<int>());
         Serial.println(jsonBuffer["fp"].as<byte>());
     digitalWrite(LED_BUILTIN, HIGH);
-    
+ 
 // if (jsonBuffer["name"].as<int>()==42)//future login/identifying save
-}//end setup mode function
+}//end setup mode loop
 
 //===================================
+void endSetup(){
+        setupEndpointGO = false;//comes out of setup 'if' in main loop
+      timeOUT=true;//reset new timer  
+      Serial.println("Setup mode reset");
+      digitalWrite(antiInterrupt, 0); //lets the setup pin be used again
+  }
 
+  
 void loadWifiInfo() {//creates a json package
 
   Serial.println("Creating JSON payload with wifi info");
